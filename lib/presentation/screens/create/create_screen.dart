@@ -71,7 +71,7 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
               ),
             ),
           ),
-          const Positioned(bottom: 0, left: 0, right: 0, child: BottomNav(currentIndex: 2)),
+          const Positioned(bottom: 0, left: 0, right: 0, child: BottomNav(currentIndex: 3)),
         ],
       ),
     );

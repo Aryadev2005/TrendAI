@@ -8,52 +8,60 @@ import '../../../presentation/widgets/common/warm_button.dart';
 import '../../../presentation/controllers/auth_controller.dart';
 import '../../../routes/app_routes.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
-  const LoginScreen({super.key});
+class SignupScreen extends ConsumerStatefulWidget {
+  const SignupScreen({super.key});
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<SignupScreen> createState() => _SignupScreenState();
 }
 
-class _LoginScreenState extends ConsumerState<LoginScreen> {
+class _SignupScreenState extends ConsumerState<SignupScreen> {
+  final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _passCtrl = TextEditingController();
+  final _confirmCtrl = TextEditingController();
   bool _obscurePass = true;
+  bool _obscureConfirm = true;
   String? _errorMsg;
 
   @override
   void dispose() {
+    _nameCtrl.dispose();
     _emailCtrl.dispose();
     _passCtrl.dispose();
+    _confirmCtrl.dispose();
     super.dispose();
   }
 
-  Future<void> _login() async {
+  Future<void> _signup() async {
     setState(() => _errorMsg = null);
 
-    if (_emailCtrl.text.trim().isEmpty) {
-      setState(() => _errorMsg = 'Please enter your email');
+    if (_nameCtrl.text.trim().isEmpty) {
+      setState(() => _errorMsg = 'Please enter your name');
       return;
     }
-    if (_passCtrl.text.isEmpty) {
-      setState(() => _errorMsg = 'Please enter your password');
+    if (_emailCtrl.text.trim().isEmpty ||
+        !_emailCtrl.text.contains('@')) {
+      setState(() => _errorMsg = 'Please enter a valid email');
+      return;
+    }
+    if (_passCtrl.text.length < 6) {
+      setState(
+          () => _errorMsg = 'Password must be at least 6 characters');
+      return;
+    }
+    if (_passCtrl.text != _confirmCtrl.text) {
+      setState(() => _errorMsg = 'Passwords do not match');
       return;
     }
 
-    final ok = await ref.read(authProvider.notifier).login(
+    final ok = await ref.read(authProvider.notifier).register(
           _emailCtrl.text.trim(),
           _passCtrl.text,
+          _nameCtrl.text.trim(),
         );
 
     if (ok && mounted) {
-      final user = ref.read(authProvider).user;
-      if (user?.primaryPlatform != null) {
-        context.go(AppRoutes.dashboard);
-      } else {
-        context.go(AppRoutes.onboarding);
-      }
-    } else if (mounted) {
-      setState(() =>
-          _errorMsg = ref.read(authProvider).error ?? 'Login failed');
+      context.go(AppRoutes.onboarding);
     }
   }
 
@@ -65,7 +73,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
       backgroundColor: AppColors.bgPrimary,
       body: Stack(
         children: [
-          // Background blobs
           Positioned(
             top: -80, right: -60,
             child: _blob(250, AppColors.primary.withOpacity(0.08)),
@@ -81,8 +88,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 48),
-
+                  const SizedBox(height: 16),
+                  // Back button
+                  GestureDetector(
+                    onTap: () => context.go(AppRoutes.login),
+                    child: Container(
+                      padding: const EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.bgCard,
+                        shape: BoxShape.circle,
+                        border: Border.all(color: AppColors.border),
+                      ),
+                      child: const Icon(Icons.arrow_back_rounded,
+                          color: AppColors.textDark, size: 18),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
                   // Badge
                   Container(
                     padding: const EdgeInsets.symmetric(
@@ -98,7 +119,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         const Icon(Icons.auto_awesome_rounded,
                             color: AppColors.primary, size: 13),
                         const SizedBox(width: 6),
-                        Text('AI-Powered Trend Engine',
+                        Text('Join 50,000+ Indian creators',
                             style: GoogleFonts.dmSans(
                               color: AppColors.primaryDark,
                               fontSize: 12,
@@ -107,25 +128,21 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 28),
-
-                  // Title
-                  Text('Welcome\nBack',
+                  const SizedBox(height: 20),
+                  Text('Create your\naccount',
                       style: GoogleFonts.dmSerifDisplay(
-                        fontSize: 46,
+                        fontSize: 40,
                         color: AppColors.textDark,
-                        height: 1.05,
+                        height: 1.1,
                       )),
-                  const SizedBox(height: 12),
-                  Text(
-                    'Your personalised trend feed\nis waiting for you.',
-                    style: GoogleFonts.dmSans(
-                      fontSize: 15,
-                      color: AppColors.textMid,
-                      height: 1.6,
-                    ),
-                  ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 8),
+                  Text('Start knowing what to post before anyone else.',
+                      style: GoogleFonts.dmSans(
+                        fontSize: 14,
+                        color: AppColors.textMid,
+                        height: 1.5,
+                      )),
+                  const SizedBox(height: 32),
 
                   // Error message
                   if (_errorMsg != null) ...[
@@ -133,11 +150,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
                         color: AppColors.error.withOpacity(0.08),
-                        borderRadius: BorderRadius.circular(
-                            AppDimensions.radiusMD),
+                        borderRadius:
+                            BorderRadius.circular(AppDimensions.radiusMD),
                         border: Border.all(
-                            color:
-                                AppColors.error.withOpacity(0.3)),
+                            color: AppColors.error.withOpacity(0.3)),
                       ),
                       child: Row(children: [
                         Icon(Icons.error_outline_rounded,
@@ -154,24 +170,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     const SizedBox(height: 16),
                   ],
 
-                  // Email field
+                  // Fields
+                  _field(
+                    hint: 'Full name',
+                    icon: Icons.person_outline_rounded,
+                    controller: _nameCtrl,
+                  ),
+                  const SizedBox(height: 12),
                   _field(
                     hint: 'Email address',
                     icon: Icons.email_outlined,
                     controller: _emailCtrl,
                     keyboardType: TextInputType.emailAddress,
                   ),
-                  const SizedBox(height: 14),
-
-                  // Password field
+                  const SizedBox(height: 12),
                   _field(
                     hint: 'Password',
                     icon: Icons.lock_outline_rounded,
                     controller: _passCtrl,
                     obscure: _obscurePass,
                     suffix: GestureDetector(
-                      onTap: () => setState(
-                          () => _obscurePass = !_obscurePass),
+                      onTap: () =>
+                          setState(() => _obscurePass = !_obscurePass),
                       child: Icon(
                         _obscurePass
                             ? Icons.visibility_outlined
@@ -181,28 +201,41 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-
-                  // Forgot password
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Text('Forgot password?',
-                        style: GoogleFonts.dmSans(
-                          color: AppColors.primary,
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                        )),
+                  const SizedBox(height: 12),
+                  _field(
+                    hint: 'Confirm password',
+                    icon: Icons.lock_outline_rounded,
+                    controller: _confirmCtrl,
+                    obscure: _obscureConfirm,
+                    suffix: GestureDetector(
+                      onTap: () => setState(
+                          () => _obscureConfirm = !_obscureConfirm),
+                      child: Icon(
+                        _obscureConfirm
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                        color: AppColors.textLight,
+                        size: 18,
+                      ),
+                    ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 8),
+                  Text(
+                    'By signing up you agree to our Terms & Privacy Policy',
+                    style: GoogleFonts.dmSans(
+                        color: AppColors.textLight,
+                        fontSize: 11),
+                  ),
+                  const SizedBox(height: 28),
 
-                  // Login button
+                  // Sign up button
                   authState.isLoading
                       ? const Center(
                           child: CircularProgressIndicator(
                               color: AppColors.primary))
                       : WarmButton(
-                          label: 'Get Started',
-                          onTap: _login,
+                          label: 'Create Account',
+                          onTap: _signup,
                         ),
                   const SizedBox(height: 14),
 
@@ -233,16 +266,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           .read(authProvider.notifier)
                           .loginWithGoogle();
                       if (ok && mounted) {
-                        context.go(AppRoutes.dashboard);
+                        context.go(AppRoutes.onboarding);
                       }
                     },
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 28),
 
-                  // Sign up link
+                  // Already have account
                   Center(
                     child: GestureDetector(
-                      onTap: () => context.go(AppRoutes.signup),
+                      onTap: () => context.go(AppRoutes.login),
                       child: RichText(
                         text: TextSpan(
                           style: GoogleFonts.dmSans(
@@ -250,10 +283,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               fontSize: 14),
                           children: [
                             const TextSpan(
-                                text:
-                                    "Don't have an account?  "),
+                                text: 'Already have an account?  '),
                             TextSpan(
-                              text: 'Sign up free',
+                              text: 'Sign in',
                               style: GoogleFonts.dmSans(
                                 color: AppColors.primary,
                                 fontWeight: FontWeight.w600,
@@ -285,8 +317,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     return Container(
       decoration: BoxDecoration(
         color: AppColors.bgCard,
-        borderRadius:
-            BorderRadius.circular(AppDimensions.radiusMD),
+        borderRadius: BorderRadius.circular(AppDimensions.radiusMD),
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
@@ -306,8 +337,8 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           hintText: hint,
           hintStyle: GoogleFonts.dmSans(
               color: AppColors.textLight, fontSize: 15),
-          prefixIcon: Icon(icon,
-              color: AppColors.textLight, size: 20),
+          prefixIcon:
+              Icon(icon, color: AppColors.textLight, size: 20),
           suffixIcon: suffix != null
               ? Padding(
                   padding: const EdgeInsets.only(right: 12),
@@ -325,7 +356,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   Widget _blob(double size, Color color) => Container(
         width: size,
         height: size,
-        decoration: BoxDecoration(
-            shape: BoxShape.circle, color: color),
+        decoration:
+            BoxDecoration(shape: BoxShape.circle, color: color),
       );
 }

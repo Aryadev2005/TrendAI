@@ -54,7 +54,7 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const Positioned(bottom: 0, left: 0, right: 0, child: BottomNav(currentIndex: 3)),
+          const Positioned(bottom: 0, left: 0, right: 0, child: BottomNav(currentIndex: 4)),
         ],
       ),
     );

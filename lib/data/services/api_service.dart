@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/trend_model.dart';
+import '../models/song_model.dart';
 
 class ApiService {
   static const _claudeApiUrl = 'https://api.anthropic.com/v1/messages';
@@ -111,6 +112,63 @@ Focus on India-relevant trends. Use ₹ for prices. Reference Indian platforms, 
       ...item as Map<String, dynamic>,
       'detectedAt': DateTime.now().toIso8601String(),
     })).toList();
+  }
+
+  // ─── Get Top Songs ────────────────────────────────────────────────────────
+  static Future<List<SongModel>> getTopSongs({
+    required String niche,
+    required String platform,
+    required String followerRange,
+  }) async {
+    final prompt = '''
+You are a music trend analyst specialising in Indian content creators.
+
+Generate 7 trending songs for a $niche creator with $followerRange followers to use on $platform.
+
+Respond ONLY with a JSON array, no markdown:
+[
+  {
+    "id": "unique_id",
+    "title": "song title",
+    "artist": "artist name",
+    "genre": "genre e.g. Bollywood / Indie / Hip-Hop",
+    "useCount": "e.g. 1.2M uses",
+    "growthPercent": "e.g. +180%",
+    "badge": "HOT or RISING or NEW",
+    "platform": "platform name",
+    "aiTip": "one actionable sentence for the creator",
+    "bpm": 120,
+    "durationSecs": 30
+  }
+]
+
+Focus on India-relevant music. Include Bollywood, Indie, Punjabi, and Desi Hip-Hop tracks.
+''';
+
+    final response = await http.post(
+      Uri.parse(_claudeApiUrl),
+      headers: _headers,
+      body: jsonEncode({
+        'model': _model,
+        'max_tokens': 2000,
+        'messages': [
+          {'role': 'user', 'content': prompt},
+        ],
+      }),
+    );
+
+    if (response.statusCode != 200) {
+      throw Exception('Song fetch failed: ${response.statusCode}');
+    }
+
+    final data = jsonDecode(response.body);
+    final raw = (data['content'][0]['text'] as String)
+        .replaceAll(RegExp(r'```json'), '')
+        .replaceAll(RegExp(r'```'), '')
+        .trim();
+
+    final List<dynamic> list = jsonDecode(raw);
+    return list.map((item) => SongModel.fromMap(item as Map<String, dynamic>)).toList();
   }
 
   // ─── Analyse engagement potential ─────────────────────────────────────────

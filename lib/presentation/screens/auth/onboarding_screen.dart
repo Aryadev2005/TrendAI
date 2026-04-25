@@ -62,13 +62,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     label: 'Continue →',
                     isEnabled: _canContinue,
                     onTap: () {
-                      ref.read(authProvider.notifier).updateProfile(
-                        followerRange: selectedFollowers,
-                        primaryPlatform: selectedPlatform,
-                        niches: selectedNiches,
-                      );
-                      context.go(AppRoutes.dashboard);
-                    },
+  ref.read(authProvider.notifier).updateProfile(
+    followerRange: selectedFollowers,
+    primaryPlatform: selectedPlatform,
+    niches: selectedNiches,
+  );
+  context.go(AppRoutes.dashboard);
+},
                   ),
                   const SizedBox(height: 30),
                 ],

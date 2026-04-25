@@ -29,29 +29,42 @@ class AuthRepository {
 
   // ─── Register ─────────────────────────────────────────────────────────────
   Future<UserModel> register(
-    String email,
-    String password,
-    String name,
-  ) async {
-    final result = await FirebaseService.createAccount(
-      email,
-      password,
-      name,
-    );
-    if (result == null) throw Exception('Registration failed');
+  String email,
+  String password,
+  String name,
+) async {
+  await Future.delayed(const Duration(milliseconds: 800));
 
-    final user = UserModel(
-      id: result['uid'],
-      name: name,
-      email: email,
-      createdAt: DateTime.now(),
-    );
-
-    // Save to Firestore
-    await FirebaseService.saveUser(user.toMap());
-    await _cacheUser(user);
-    return user;
+  if (email.isEmpty || password.length < 6) {
+    throw Exception('Invalid credentials');
   }
+
+  final user = UserModel(
+    id: 'user_${DateTime.now().millisecondsSinceEpoch}',
+    name: name,
+    email: email,
+    createdAt: DateTime.now(),
+  );
+
+  await _cacheUser(user);
+  await _saveToken('token_${user.id}');
+  return user;
+}
+  Future<UserModel> loginWithGoogle() async {
+  // TODO: Implement real Google Sign In later
+  // For now return a mock Google user
+  await Future.delayed(const Duration(milliseconds: 800));
+
+  final user = UserModel(
+    id: 'google_user_${DateTime.now().millisecondsSinceEpoch}',
+    name: 'Google User',
+    email: 'googleuser@gmail.com',
+    createdAt: DateTime.now(),
+  );
+
+  await _cacheUser(user);
+  return user;
+}
 
   // ─── Logout ───────────────────────────────────────────────────────────────
   Future<void> logout() async {
@@ -108,6 +121,11 @@ class AuthRepository {
   Future<void> _cacheUser(UserModel user) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_userKey, jsonEncode(user.toMap()));
+  }
+
+  Future<void> _saveToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_token', token);
   }
 
   String _nameFromEmail(String email) {

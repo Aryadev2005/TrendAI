@@ -61,7 +61,10 @@ class _CreateScreenState extends ConsumerState<CreateScreen> {
                       : content == null
                           ? AppButton(
                               label: 'Generate AI Content',
-                              onTap: () => ref.read(contentProvider.notifier).generateContent('Quiet Luxury', selectedPlatform),
+                              onTap: () => ref.read(contentProvider.notifier).generateContent(
+                                trendTitle: 'Quiet Luxury',
+  platform: selectedPlatform,
+),
                             )
                           : _contentResult(content),
                 ],

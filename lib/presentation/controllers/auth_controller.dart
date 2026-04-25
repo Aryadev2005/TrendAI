@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/user_model.dart';
+import '../../data/repositories/auth_repository.dart';
 
 class AuthState {
   final UserModel? user;
@@ -18,44 +19,52 @@ class AuthState {
 }
 
 class AuthController extends StateNotifier<AuthState> {
-  AuthController() : super(const AuthState());
+  final AuthRepository _repo;
+  AuthController(this._repo) : super(const AuthState()) {
+    _restoreSession();
+  }
 
-  Future<void> login(String email, String password) async {
+  // Restore cached session on app launch
+  Future<void> _restoreSession() async {
+    final cached = await _repo.getCachedUser();
+    if (cached != null) state = state.copyWith(user: cached);
+  }
+
+  Future<bool> login(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      await Future.delayed(const Duration(seconds: 1)); // Replace with Firebase
-      final user = UserModel(
-        id: 'user_001',
-        name: 'Priya Sharma',
-        email: email,
-        createdAt: DateTime.now(),
-      );
+      final user = await _repo.login(email, password);
       state = state.copyWith(user: user, isLoading: false);
+      return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
+      return false;
     }
   }
 
   Future<void> logout() async {
+    await _repo.logout();
     state = const AuthState();
   }
 
-  void updateProfile({
+  Future<void> updateProfile({
     String? followerRange,
     String? primaryPlatform,
     List<String>? niches,
-  }) {
+  }) async {
     if (state.user == null) return;
-    state = state.copyWith(
-      user: state.user!.copyWith(
-        followerRange: followerRange,
-        primaryPlatform: primaryPlatform,
-        niches: niches,
-      ),
+    final updated = await _repo.updateProfile(
+      state.user!,
+      followerRange: followerRange,
+      primaryPlatform: primaryPlatform,
+      niches: niches,
     );
+    state = state.copyWith(user: updated);
   }
 }
 
+final authRepositoryProvider = Provider((ref) => AuthRepository());
+
 final authProvider = StateNotifierProvider<AuthController, AuthState>(
-  (ref) => AuthController(),
+  (ref) => AuthController(ref.read(authRepositoryProvider)),
 );

@@ -19,7 +19,7 @@ class _TrendsScreenState extends ConsumerState<TrendsScreen> {
   @override
   void initState() {
     super.initState();
-    Future.microtask(() => ref.read(trendProvider.notifier).fetchTrends('fashion'));
+    Future.microtask(() => ref.read(trendProvider.notifier).fetchTrends(niche: 'fashion'));
   }
 
   @override

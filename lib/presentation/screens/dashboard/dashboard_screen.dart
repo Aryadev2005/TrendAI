@@ -19,7 +19,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   void initState() {
     super.initState();
     Future.microtask(() =>
-        ref.read(trendProvider.notifier).fetchTrends('fashion'));
+        ref.read(trendProvider.notifier).fetchTrends(niche: 'fashion'));
   }
 
   @override

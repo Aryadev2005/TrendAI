@@ -1,70 +1,141 @@
-// ignore_for_file: avoid_print
-//
-// FirebaseService — stub implementation
-// ──────────────────────────────────────────────────────────────────────────
-// To activate Firebase:
-//   1. Run: flutterfire configure
-//   2. Uncomment the firebase_core + firebase_auth imports in pubspec.yaml
-//   3. Replace stubs below with real Firebase calls
-//   4. Add GoogleService-Info.plist (iOS) and google-services.json (Android)
-// ──────────────────────────────────────────────────────────────────────────
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirebaseService {
-  static bool _initialized = false;
+  static FirebaseAuth get auth => FirebaseAuth.instance;
+  static FirebaseFirestore get db => FirebaseFirestore.instance;
 
-  /// Call once in main() after WidgetsFlutterBinding.ensureInitialized()
-  static Future<void> initialize() async {
-    if (_initialized) return;
-    // TODO: await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-    _initialized = true;
-    print('[FirebaseService] stub initialized — real Firebase not yet configured');
-  }
+  // ─── Auth ─────────────────────────────────────────────────────────────────
 
-  /// Sign in with email + password
   static Future<Map<String, dynamic>?> signInWithEmail(
     String email,
     String password,
   ) async {
-    // TODO: final cred = await FirebaseAuth.instance.signInWithEmailAndPassword(...)
-    // return {'uid': cred.user!.uid, 'email': cred.user!.email};
-    throw UnimplementedError('Firebase Auth not yet configured');
+    final cred = await auth.signInWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    return {
+      'uid': cred.user!.uid,
+      'email': cred.user!.email,
+      'name': cred.user!.displayName ?? '',
+    };
   }
 
-  /// Create account with email + password
   static Future<Map<String, dynamic>?> createAccount(
     String email,
     String password,
     String name,
   ) async {
-    // TODO: final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(...)
-    // await cred.user!.updateDisplayName(name);
-    throw UnimplementedError('Firebase Auth not yet configured');
+    final cred = await auth.createUserWithEmailAndPassword(
+      email: email,
+      password: password,
+    );
+    await cred.user!.updateDisplayName(name);
+    return {
+      'uid': cred.user!.uid,
+      'email': cred.user!.email,
+      'name': name,
+    };
   }
 
-  /// Sign out
   static Future<void> signOut() async {
-    // TODO: await FirebaseAuth.instance.signOut();
+    await auth.signOut();
   }
 
-  /// Save user document to Firestore
+  static User? get currentUser => auth.currentUser;
+
+  // ─── Firestore — Users ────────────────────────────────────────────────────
+
   static Future<void> saveUser(Map<String, dynamic> userData) async {
-    // TODO: await FirebaseFirestore.instance.collection('users').doc(userData['id']).set(userData);
+    await db
+        .collection('users')
+        .doc(userData['id'])
+        .set(userData, SetOptions(merge: true));
   }
 
-  /// Fetch user document from Firestore
   static Future<Map<String, dynamic>?> getUser(String uid) async {
-    // TODO: final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
-    // return doc.data();
-    return null;
+    final doc = await db.collection('users').doc(uid).get();
+    return doc.data();
   }
 
-  /// Save trend to user's saved list
-  static Future<void> saveTrend(String userId, String trendId) async {
-    // TODO: Firestore update
+  static Future<void> updateUser(
+    String uid,
+    Map<String, dynamic> data,
+  ) async {
+    await db.collection('users').doc(uid).update(data);
   }
 
-  /// Get saved trends for user
-  static Future<List<String>> getSavedTrends(String userId) async {
-    return [];
+  // ─── Firestore — Trends ───────────────────────────────────────────────────
+
+  static Future<void> saveTrend(
+    String userId,
+    Map<String, dynamic> trend,
+  ) async {
+    await db
+        .collection('saved_trends')
+        .doc(userId)
+        .collection('trends')
+        .doc(trend['id'])
+        .set(trend);
+  }
+
+  static Future<List<Map<String, dynamic>>> getSavedTrends(
+    String userId,
+  ) async {
+    final snap = await db
+        .collection('saved_trends')
+        .doc(userId)
+        .collection('trends')
+        .orderBy('detectedAt', descending: true)
+        .get();
+    return snap.docs.map((d) => d.data()).toList();
+  }
+
+  // ─── Firestore — Content History ──────────────────────────────────────────
+
+  static Future<void> saveContentHistory(
+    String userId,
+    Map<String, dynamic> content,
+  ) async {
+    await db
+        .collection('content_history')
+        .doc(userId)
+        .collection('items')
+        .add({
+      ...content,
+      'userId': userId,
+      'savedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  static Future<List<Map<String, dynamic>>> getContentHistory(
+    String userId,
+  ) async {
+    final snap = await db
+        .collection('content_history')
+        .doc(userId)
+        .collection('items')
+        .orderBy('savedAt', descending: true)
+        .limit(20)
+        .get();
+    return snap.docs.map((d) => d.data()).toList();
+  }
+
+  // ─── Firestore — Analytics ────────────────────────────────────────────────
+
+  static Future<void> logContentGenerated(
+    String userId,
+    String platform,
+    String niche,
+  ) async {
+    await db.collection('analytics').add({
+      'userId': userId,
+      'event': 'content_generated',
+      'platform': platform,
+      'niche': niche,
+      'timestamp': FieldValue.serverTimestamp(),
+    });
   }
 }

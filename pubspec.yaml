@@ -22,11 +22,14 @@ dependencies:
   # Icons
   cupertino_icons: ^1.0.6
 
-  # Local storage (for auth token persistence)
+  # Local storage
   shared_preferences: ^2.2.3
 
-  # Google Sign-In (stub for later)
-  # google_sign_in: ^6.2.1
+  # Firebase
+  firebase_core: ^2.27.0
+  firebase_auth: ^4.17.0
+  cloud_firestore: ^4.15.0
+  firebase_storage: ^11.6.0
 
 dev_dependencies:
   flutter_test:

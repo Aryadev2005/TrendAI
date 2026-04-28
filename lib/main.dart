@@ -18,11 +18,10 @@ class TrendAIApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final container = ProviderScope.containerOf(context);
     return MaterialApp.router(
       title: 'TrendAI',
       debugShowCheckedModeBanner: false,
-      routerConfig: AppRoutes.createRouter(container),
+      routerConfig: AppRoutes.router,
       theme: AppTheme.warmTheme,
     );
   }

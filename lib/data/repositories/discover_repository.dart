@@ -6,8 +6,7 @@ import 'package:http/http.dart' as http;
 import '../models/radar_model.dart';
 
 // ── Replace with your actual base URL / use an existing ApiClient if you have one ──
-const _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://localhost:3000/api/v1');
-
+const _baseUrl = String.fromEnvironment('API_BASE_URL', defaultValue: 'http://10.0.2.2:3000/api/v1');
 class DiscoverRepository {
   final String? authToken;
   DiscoverRepository({this.authToken});

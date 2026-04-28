@@ -11,6 +11,10 @@ class AriaSession {
   final String? platform;
   final String? niche;
   final String? archetype;
+  final String? format;
+  final String? mood;
+  final String? collaboration;
+  final String? angle;
   final Map<String, dynamic>? trendContext; // carries full trend data from Discover
 
   const AriaSession({
@@ -20,6 +24,10 @@ class AriaSession {
     this.platform,
     this.niche,
     this.archetype,
+    this.format,
+    this.mood,
+    this.collaboration,
+    this.angle,
     this.trendContext,
   });
 
@@ -30,6 +38,10 @@ class AriaSession {
     String? platform,
     String? niche,
     String? archetype,
+    String? format,
+    String? mood,
+    String? collaboration,
+    String? angle,
     Map<String, dynamic>? trendContext,
   }) {
     return AriaSession(
@@ -39,6 +51,10 @@ class AriaSession {
       platform: platform ?? this.platform,
       niche: niche ?? this.niche,
       archetype: archetype ?? this.archetype,
+      format: format ?? this.format,
+      mood: mood ?? this.mood,
+      collaboration: collaboration ?? this.collaboration,
+      angle: angle ?? this.angle,
       trendContext: trendContext ?? this.trendContext,
     );
   }
@@ -84,6 +100,26 @@ class AriaSessionNotifier extends StateNotifier<AriaSession> {
   /// Set detected archetype
   void setArchetype(String archetype) {
     state = state.copyWith(archetype: archetype);
+  }
+
+  /// Set video format
+  void setFormat(String format) {
+    state = state.copyWith(format: format);
+  }
+
+  /// Set mood
+  void setMood(String mood) {
+    state = state.copyWith(mood: mood);
+  }
+
+  /// Set collaboration style
+  void setCollaboration(String collaboration) {
+    state = state.copyWith(collaboration: collaboration);
+  }
+
+  /// Set angle / perspective
+  void setAngle(String angle) {
+    state = state.copyWith(angle: angle);
   }
 
   /// Full reset — called after a post is launched

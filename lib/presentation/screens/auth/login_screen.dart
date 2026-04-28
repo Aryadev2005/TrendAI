@@ -44,17 +44,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           _passCtrl.text,
         );
 
-    if (ok && mounted) {
-      final user = ref.read(authProvider).user;
-      if (user?.primaryPlatform != null) {
-        context.go(AppRoutes.dashboard);
-      } else {
-        context.go(AppRoutes.onboarding);
-      }
-    } else if (mounted) {
-      setState(() =>
-          _errorMsg = ref.read(authProvider).error ?? 'Login failed');
-    }
+    if (!mounted) return;
+if (ok) {
+  final user = ref.read(authProvider).user;
+  if (user?.primaryPlatform != null) {
+    context.go(AppRoutes.dashboard);
+  } else {
+    context.go(AppRoutes.onboarding);
+  }
+} else {
+  setState(() =>
+      _errorMsg = ref.read(authProvider).error ?? 'Login failed');
+}
   }
 
   @override
@@ -68,11 +69,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           // Background blobs
           Positioned(
             top: -80, right: -60,
-            child: _blob(250, AppColors.primary.withOpacity(0.08)),
+            child: _blob(250, AppColors.primary.withValues(alpha: 0.08)),
           ),
           Positioned(
             bottom: -100, left: -60,
-            child: _blob(280, AppColors.accent.withOpacity(0.08)),
+            child: _blob(280, AppColors.accent.withValues(alpha: 0.08)),
           ),
           SafeArea(
             child: SingleChildScrollView(
@@ -132,15 +133,15 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.error.withOpacity(0.08),
+                        color: AppColors.error.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(
                             AppDimensions.radiusMD),
                         border: Border.all(
                             color:
-                                AppColors.error.withOpacity(0.3)),
+                                AppColors.error.withValues(alpha: 0.3)),
                       ),
                       child: Row(children: [
-                        Icon(Icons.error_outline_rounded,
+                        const Icon(Icons.error_outline_rounded,
                             color: AppColors.error, size: 16),
                         const SizedBox(width: 8),
                         Expanded(
@@ -208,7 +209,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
                   // Divider
                   Row(children: [
-                    Expanded(
+                    const Expanded(
                         child: Divider(color: AppColors.border)),
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -218,7 +219,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                               color: AppColors.textLight,
                               fontSize: 12)),
                     ),
-                    Expanded(
+                    const Expanded(
                         child: Divider(color: AppColors.border)),
                   ]),
                   const SizedBox(height: 14),
@@ -229,12 +230,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     isOutlined: true,
                     icon: Icons.g_mobiledata,
                     onTap: () async {
-                      final ok = await ref
-                          .read(authProvider.notifier)
-                          .loginWithGoogle();
-                      if (ok && mounted) {
-                        context.go(AppRoutes.dashboard);
-                      }
+                      await ref.read(authProvider.notifier).loginWithGoogle();
+                      if (!mounted) return;
+                      context.go(AppRoutes.dashboard);
                     },
                   ),
                   const SizedBox(height: 32),
@@ -290,7 +288,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.06),
+            color: AppColors.shadow.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

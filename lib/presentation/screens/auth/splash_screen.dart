@@ -152,21 +152,21 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
           // Background blobs
           _AnimatedBlob(
             size: 280,
-            color: AppColors.primary.withOpacity(0.07),
+            color: AppColors.primary.withValues(alpha: 0.07),
             top: -80,
             right: -60,
             delay: 0,
           ),
           _AnimatedBlob(
             size: 220,
-            color: AppColors.accent.withOpacity(0.09),
+            color: AppColors.accent.withValues(alpha: 0.09),
             bottom: -60,
             left: -60,
             delay: 300,
           ),
           _AnimatedBlob(
             size: 140,
-            color: AppColors.primaryGlow.withOpacity(0.1),
+            color: AppColors.primaryGlow.withValues(alpha: 0.1),
             top: 180,
             left: -30,
             delay: 600,
@@ -270,12 +270,12 @@ class _LogoBox extends StatelessWidget {
             borderRadius: BorderRadius.circular(28),
             boxShadow: [
               BoxShadow(
-                color: AppColors.primary.withOpacity(0.4),
+                color: AppColors.primary.withValues(alpha: 0.4),
                 blurRadius: 28,
                 offset: const Offset(0, 12),
               ),
               BoxShadow(
-                color: AppColors.primaryGlow.withOpacity(0.3),
+                color: AppColors.primaryGlow.withValues(alpha: 0.3),
                 blurRadius: 50,
                 spreadRadius: 5,
               ),
@@ -293,7 +293,7 @@ class _LogoBox extends StatelessWidget {
                       end: Alignment.bottomRight,
                       colors: [
                         Colors.transparent,
-                        Colors.white.withOpacity(0.25),
+                        Colors.white.withValues(alpha: 0.25),
                         Colors.transparent,
                       ],
                       stops: [
@@ -304,7 +304,7 @@ class _LogoBox extends StatelessWidget {
                     ).createShader(bounds);
                   },
                   child: Container(
-                    color: Colors.white.withOpacity(0.1),
+                    color: Colors.white.withValues(alpha: 0.1),
                   ),
                 ),
               ),
@@ -455,7 +455,7 @@ class _LoadingDotsState extends State<_LoadingDots>
               decoration: BoxDecoration(
                 color: i == 1
                     ? AppColors.primary
-                    : AppColors.primary.withOpacity(0.4),
+                    : AppColors.primary.withValues(alpha: 0.4),
                 shape: BoxShape.circle,
               ),
             ),

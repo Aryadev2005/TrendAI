@@ -17,7 +17,8 @@ dependencies:
   go_router: ^13.2.0
 
   # HTTP
-  http: ^1.2.1
+  dio: ^5.4.0
+  http: ^1.2.0
 
   # Icons
   cupertino_icons: ^1.0.6

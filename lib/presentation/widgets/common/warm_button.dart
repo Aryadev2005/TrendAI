@@ -76,7 +76,7 @@ class _WarmButtonState extends State<WarmButton>
             boxShadow: widget.isEnabled && !widget.isOutlined
                 ? [
                     BoxShadow(
-                      color: AppColors.primary.withOpacity(0.28),
+                      color: AppColors.primary.withValues(alpha: 0.28),
                       blurRadius: 16,
                       offset: const Offset(0, 6),
                     )

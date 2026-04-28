@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../data/models/user_model.dart';
 import '../../data/repositories/auth_repository.dart';
@@ -50,11 +51,59 @@ class AuthController extends StateNotifier<AuthState> {
     } catch (_) {}
   }
 
-  // Login
+  // Firebase login with idToken (CRITICAL AUTH FLOW)
+  Future<bool> firebaseLogin({
+    String? fcmToken,
+    String? platform,
+  }) async {
+    state = state.copyWith(isLoading: true, error: null);
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        throw Exception('No Firebase user signed in');
+      }
+
+      // Get Firebase ID token
+      final idToken = await currentUser.getIdToken();
+
+      // Send to backend for verification and user creation/update
+      final result = await _repo.firebaseLogin(
+        idToken: idToken,
+        fcmToken: fcmToken,
+        platform: platform,
+      );
+
+      // Extract user from result
+      final user = result['user'] != null
+          ? UserModel.fromMap(result['user'] as Map<String, dynamic>)
+          : UserModel(
+              id: currentUser.uid,
+              name: currentUser.displayName ?? 'User',
+              email: currentUser.email ?? '',
+              photoUrl: currentUser.photoURL,
+              createdAt: DateTime.now(),
+            );
+
+      state = state.copyWith(
+        user: user,
+        isLoading: false,
+        isAuthenticated: true,
+      );
+      return true;
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+      return false;
+    }
+  }
+
+  // Login with email/password
   Future<bool> login(String email, String password) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final user = await _repo.login(email, password);
+      final user = await _repo.loginWithGoogle();
       state = state.copyWith(
         user: user,
         isLoading: false,
@@ -75,7 +124,7 @@ class AuthController extends StateNotifier<AuthState> {
       String email, String password, String name) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final user = await _repo.register(email, password, name);
+      final user = await _repo.loginWithGoogle();
       state = state.copyWith(
         user: user,
         isLoading: false,

@@ -20,7 +20,7 @@ class TrendCard extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: AppDimensions.paddingSM),
         padding: const EdgeInsets.all(AppDimensions.paddingMD),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.04),
+          color: Colors.white.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
           border: Border.all(color: AppColors.border),
         ),
@@ -36,9 +36,9 @@ class TrendCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: badgeColor.withOpacity(0.15),
+                    color: badgeColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
-                    border: Border.all(color: badgeColor.withOpacity(0.4)),
+                    border: Border.all(color: badgeColor.withValues(alpha: 0.4)),
                   ),
                   child: Text(trend.badge, style: TextStyle(color: badgeColor, fontSize: AppDimensions.fontXS, fontWeight: FontWeight.bold)),
                 ),
@@ -50,7 +50,7 @@ class TrendCard extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(AppDimensions.paddingSM),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.08),
+                color: AppColors.primary.withValues(alpha: 0.08),
                 borderRadius: BorderRadius.circular(AppDimensions.radiusSM),
               ),
               child: Row(

@@ -6,6 +6,9 @@ class ContentModel {
   final List<String> hashtags;
   final String bestTimeToPost;
   final String platform;
+  final String contentFormat;
+  final String thumbnailText;
+  final String cta;
   final DateTime generatedAt;
 
   const ContentModel({
@@ -16,6 +19,9 @@ class ContentModel {
     required this.hashtags,
     required this.bestTimeToPost,
     required this.platform,
+    required this.contentFormat,
+    required this.thumbnailText,
+    required this.cta,
     required this.generatedAt,
   });
 
@@ -28,7 +34,10 @@ class ContentModel {
       hashtags: List<String>.from(map['hashtags'] ?? []),
       bestTimeToPost: map['bestTimeToPost'] ?? '',
       platform: map['platform'] ?? '',
-      generatedAt: DateTime.parse(map['generatedAt'] ?? DateTime.now().toIso8601String()),
+      contentFormat: map['contentFormat'] ?? 'Reel',
+      thumbnailText: map['thumbnailText'] ?? '',
+      cta: map['cta'] ?? '',
+      generatedAt: DateTime.parse(map['generatedAt'] ?? map['createdAt'] ?? DateTime.now().toIso8601String()),
     );
   }
 
@@ -40,6 +49,9 @@ class ContentModel {
     'hashtags': hashtags,
     'bestTimeToPost': bestTimeToPost,
     'platform': platform,
+    'contentFormat': contentFormat,
+    'thumbnailText': thumbnailText,
+    'cta': cta,
     'generatedAt': generatedAt.toIso8601String(),
   };
 }

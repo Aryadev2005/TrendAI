@@ -39,14 +39,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
       setState(() => _errorMsg = 'Please enter your name');
       return;
     }
-    if (_emailCtrl.text.trim().isEmpty ||
-        !_emailCtrl.text.contains('@')) {
+    if (_emailCtrl.text.trim().isEmpty || !_emailCtrl.text.contains('@')) {
       setState(() => _errorMsg = 'Please enter a valid email');
       return;
     }
     if (_passCtrl.text.length < 6) {
-      setState(
-          () => _errorMsg = 'Password must be at least 6 characters');
+      setState(() => _errorMsg = 'Password must be at least 6 characters');
       return;
     }
     if (_passCtrl.text != _confirmCtrl.text) {
@@ -60,8 +58,12 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
           _nameCtrl.text.trim(),
         );
 
-    if (ok && mounted) {
+    if (!mounted) return;
+    if (ok) {
       context.go(AppRoutes.onboarding);
+    } else {
+      setState(() =>
+          _errorMsg = ref.read(authProvider).error ?? 'Signup failed');
     }
   }
 
@@ -75,11 +77,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         children: [
           Positioned(
             top: -80, right: -60,
-            child: _blob(250, AppColors.primary.withOpacity(0.08)),
+            child: _blob(250, AppColors.primary.withValues(alpha: 0.08)),
           ),
           Positioned(
             bottom: -100, left: -60,
-            child: _blob(280, AppColors.accent.withOpacity(0.08)),
+            child: _blob(280, AppColors.accent.withValues(alpha: 0.08)),
           ),
           SafeArea(
             child: SingleChildScrollView(
@@ -149,14 +151,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: AppColors.error.withOpacity(0.08),
+                        color: AppColors.error.withValues(alpha: 0.08),
                         borderRadius:
                             BorderRadius.circular(AppDimensions.radiusMD),
                         border: Border.all(
-                            color: AppColors.error.withOpacity(0.3)),
+                            color: AppColors.error.withValues(alpha: 0.3)),
                       ),
                       child: Row(children: [
-                        Icon(Icons.error_outline_rounded,
+                        const Icon(Icons.error_outline_rounded,
                             color: AppColors.error, size: 16),
                         const SizedBox(width: 8),
                         Expanded(
@@ -241,7 +243,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
                   // Divider
                   Row(children: [
-                    Expanded(
+                    const Expanded(
                         child: Divider(color: AppColors.border)),
                     Padding(
                       padding: const EdgeInsets.symmetric(
@@ -251,7 +253,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                               color: AppColors.textLight,
                               fontSize: 12)),
                     ),
-                    Expanded(
+                    const Expanded(
                         child: Divider(color: AppColors.border)),
                   ]),
                   const SizedBox(height: 14),
@@ -262,12 +264,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     isOutlined: true,
                     icon: Icons.g_mobiledata,
                     onTap: () async {
-                      final ok = await ref
-                          .read(authProvider.notifier)
-                          .loginWithGoogle();
-                      if (ok && mounted) {
-                        context.go(AppRoutes.onboarding);
-                      }
+                      await ref.read(authProvider.notifier).loginWithGoogle();
+                      if (!mounted) return;
+                      context.go(AppRoutes.onboarding);
                     },
                   ),
                   const SizedBox(height: 28),
@@ -321,7 +320,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         border: Border.all(color: AppColors.border),
         boxShadow: [
           BoxShadow(
-            color: AppColors.shadow.withOpacity(0.06),
+            color: AppColors.shadow.withValues(alpha: 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

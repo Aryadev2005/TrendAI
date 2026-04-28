@@ -33,8 +33,10 @@ class ContentController extends StateNotifier<ContentState> {
   Future<void> generateContent({
     required String trendTitle,
     required String platform,
-    String niche = 'Fashion',
-    String followerRange = '10K–50K',
+    String niche = 'fashion',
+    String? songTitle,
+    String tone = 'casual',
+    String language = 'hinglish',
   }) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
@@ -42,7 +44,9 @@ class ContentController extends StateNotifier<ContentState> {
         trendTitle: trendTitle,
         platform: platform,
         niche: niche,
-        followerRange: followerRange,
+        songTitle: songTitle,
+        tone: tone,
+        language: language,
       );
       state = state.copyWith(generatedContent: content, isLoading: false);
     } catch (e) {
@@ -50,7 +54,9 @@ class ContentController extends StateNotifier<ContentState> {
     }
   }
 
-  void clearContent() => state = const ContentState();
+  void clearContent() {
+    state = const ContentState();
+  }
 }
 
 final contentRepositoryProvider = Provider((ref) => ContentRepository());

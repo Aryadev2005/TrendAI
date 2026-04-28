@@ -8,12 +8,14 @@ class SongRepository {
     String? followerRange,
   }) async {
     try {
-      final aiSongs = await ApiService.getTopSongs(
+      final data = await ApiService.getTopSongs(
         niche: niche,
-        platform: platform ?? 'Instagram Reels',
-        followerRange: followerRange ?? '10K–50K',
+        platform: platform ?? 'Instagram',
+        followerRange: followerRange ?? '10K-50K',
       );
-      return aiSongs;
+      return (data as List)
+        .map((item) => SongModel.fromMap(item as Map<String, dynamic>))
+        .toList();
     } catch (_) {
       return _mockSongs(niche);
     }

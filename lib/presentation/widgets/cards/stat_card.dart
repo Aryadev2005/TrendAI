@@ -22,7 +22,7 @@ class StatCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(AppDimensions.paddingMD),
         decoration: BoxDecoration(
-          color: Colors.white.withOpacity(0.05),
+          color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
           border: Border.all(color: AppColors.border),
         ),

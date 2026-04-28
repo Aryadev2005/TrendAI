@@ -5,6 +5,8 @@ class TrendModel {
   final String stat;
   final String badge;
   final String aiTip;
+  final int scorePercentage;
+  final String? niche;
   final DateTime detectedAt;
   final bool isPersonalized;
 
@@ -15,6 +17,8 @@ class TrendModel {
     required this.stat,
     required this.badge,
     required this.aiTip,
+    required this.scorePercentage,
+    this.niche,
     required this.detectedAt,
     this.isPersonalized = false,
   });
@@ -27,7 +31,9 @@ class TrendModel {
       stat: map['stat'] ?? '',
       badge: map['badge'] ?? 'NEW',
       aiTip: map['aiTip'] ?? '',
-      detectedAt: DateTime.parse(map['detectedAt'] ?? DateTime.now().toIso8601String()),
+      scorePercentage: (map['scorePercentage'] as num?)?.toInt() ?? 0,
+      niche: map['niche'],
+      detectedAt: DateTime.parse(map['detectedAt'] ?? map['createdAt'] ?? DateTime.now().toIso8601String()),
       isPersonalized: map['isPersonalized'] ?? false,
     );
   }
@@ -39,6 +45,8 @@ class TrendModel {
     'stat': stat,
     'badge': badge,
     'aiTip': aiTip,
+    'scorePercentage': scorePercentage,
+    'niche': niche,
     'detectedAt': detectedAt.toIso8601String(),
     'isPersonalized': isPersonalized,
   };

@@ -10,6 +10,7 @@ class AppColors {
 
   // ── Brand ────────────────────────────────────
   static const primary     = Color(0xFFE8722A);  // rich orange
+  static const secondary = Color(0xFFD4956A);
   static const primaryDark = Color(0xFFC45A1A);  // deep orange
   static const primaryGlow = Color(0xFFF0A060);  // light orange
   static const accent      = Color(0xFFD4956A);  // warm tan

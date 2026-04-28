@@ -26,7 +26,7 @@ class ProfileScreen extends ConsumerWidget {
                   const SizedBox(height: 20),
                   Container(
                     width: 80, height: 80,
-                    decoration: BoxDecoration(shape: BoxShape.circle, color: AppColors.primary.withOpacity(0.15), border: Border.all(color: AppColors.primary.withOpacity(0.4), width: 2)),
+                    decoration: BoxDecoration(shape: BoxShape.circle, color: AppColors.primary.withValues(alpha: 0.15), border: Border.all(color: AppColors.primary.withValues(alpha: 0.4), width: 2)),
                     child: const Icon(Icons.person, color: AppColors.primary, size: 40),
                   ),
                   const SizedBox(height: 16),
@@ -37,7 +37,7 @@ class ProfileScreen extends ConsumerWidget {
                   if (user?.primaryPlatform != null)
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.15), borderRadius: BorderRadius.circular(20), border: Border.all(color: AppColors.primary.withOpacity(0.4))),
+                      decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.15), borderRadius: BorderRadius.circular(20), border: Border.all(color: AppColors.primary.withValues(alpha: 0.4))),
                       child: Text(user!.primaryPlatform!, style: const TextStyle(color: AppColors.primary, fontSize: AppDimensions.fontSM)),
                     ),
                   const SizedBox(height: 32),
@@ -54,7 +54,7 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
           ),
-          const Positioned(bottom: 0, left: 0, right: 0, child: BottomNav(currentIndex: 4)),
+          const Positioned(bottom: 0, left: 0, right: 0, child: BottomNav(currentIndex: 5)),
         ],
       ),
     );
@@ -68,9 +68,9 @@ class ProfileScreen extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 10),
         padding: const EdgeInsets.all(AppDimensions.paddingMD),
         decoration: BoxDecoration(
-          color: highlight ? AppColors.primary.withOpacity(0.1) : Colors.white.withOpacity(0.04),
+          color: highlight ? AppColors.primary.withValues(alpha: 0.1) : Colors.white.withValues(alpha: 0.04),
           borderRadius: BorderRadius.circular(AppDimensions.cardRadius),
-          border: Border.all(color: highlight ? AppColors.primary.withOpacity(0.3) : Colors.white12),
+          border: Border.all(color: highlight ? AppColors.primary.withValues(alpha: 0.3) : Colors.white12),
         ),
         child: Row(
           children: [
@@ -85,7 +85,7 @@ class ProfileScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            Icon(Icons.chevron_right, color: Colors.white24, size: 18),
+            const Icon(Icons.chevron_right, color: Colors.white24, size: 18),
           ],
         ),
       ),

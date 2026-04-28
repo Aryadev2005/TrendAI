@@ -30,7 +30,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       backgroundColor: AppColors.bgDark,
       body: Stack(
         children: [
-          Positioned(top: -100, right: -60, child: Container(width: 300, height: 300, decoration: BoxDecoration(shape: BoxShape.circle, color: AppColors.purple.withOpacity(0.1)))),
+          Positioned(top: -100, right: -60, child: Container(width: 300, height: 300, decoration: BoxDecoration(shape: BoxShape.circle, color: AppColors.purple.withValues(alpha: 0.1)))),
           SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.all(AppDimensions.paddingLG),
@@ -98,7 +98,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             decoration: BoxDecoration(
-              color: sel ? AppColors.primary.withOpacity(0.15) : Colors.white.withOpacity(0.05),
+              color: sel ? AppColors.primary.withValues(alpha: 0.15) : Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(AppDimensions.radiusFull),
               border: Border.all(color: sel ? AppColors.primary : Colors.white12),
             ),

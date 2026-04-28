@@ -1,7 +1,7 @@
 class AppStrings {
   // App
   static const appName = 'TrendAI';
-  static const appTagline = 'Know what to post. Before anyone else.';
+  static const appTagline = 'Go viral. Before it\'s a trend.';
 
   // Auth
   static const welcomeBack = 'Welcome\nBack';

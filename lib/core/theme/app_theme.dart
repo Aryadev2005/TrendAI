@@ -16,7 +16,6 @@ class AppTheme {
         primary: AppColors.primary,
         secondary: AppColors.accent,
         surface: AppColors.bgCard,
-        background: AppColors.bgPrimary,
         onPrimary: Colors.white,
         onSurface: AppColors.textDark,
       ),

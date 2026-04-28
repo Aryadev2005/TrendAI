@@ -8,6 +8,7 @@ class AppDimensions {
   static const paddingXXL = 48.0;
 
   // Border radius — soft and cozy
+  static const radiusXS   = 6.0;
   static const radiusSM   = 12.0;
   static const radiusMD   = 20.0;
   static const radiusLG   = 28.0;

@@ -14,23 +14,23 @@ class BottomNav extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final items = [
-      _NavItem(icon: Icons.home_rounded,           label: 'Home',    route: AppRoutes.dashboard),
-      _NavItem(icon: Icons.explore_rounded,         label: 'Discover', route: AppRoutes.discover),
-      _NavItem(icon: Icons.auto_fix_high_rounded,   label: 'Studio',  route: AppRoutes.studio),
-      _NavItem(icon: Icons.rocket_launch_rounded,   label: 'Launch',  route: AppRoutes.launch),
-      _NavItem(icon: Icons.person_rounded,          label: 'Profile', route: AppRoutes.profile),
+      const _NavItem(icon: Icons.home_rounded,           label: 'Home',    route: AppRoutes.dashboard),
+      const _NavItem(icon: Icons.explore_rounded,         label: 'Discover', route: AppRoutes.discover),
+      const _NavItem(icon: Icons.auto_fix_high_rounded,   label: 'Studio',  route: AppRoutes.studio),
+      const _NavItem(icon: Icons.rocket_launch_rounded,   label: 'Launch',  route: AppRoutes.launch),
+      const _NavItem(icon: Icons.person_rounded,          label: 'Profile', route: AppRoutes.profile),
     ];
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColors.bgCard,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         boxShadow: [
           BoxShadow(
             color: AppColors.shadow,
             blurRadius: 24,
-            offset: const Offset(0, -4),
+            offset: Offset(0, -4),
           ),
         ],
       ),

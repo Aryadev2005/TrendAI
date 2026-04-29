@@ -1,9 +1,10 @@
 // lib/data/repositories/onboarding_repository.dart
 import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import '../models/aria_profile_model.dart';
-import '../../presentation/controllers/auth_controller.dart';
 
 const _baseUrl = String.fromEnvironment(
   'API_BASE_URL',
@@ -11,13 +12,24 @@ const _baseUrl = String.fromEnvironment(
 );
 
 class OnboardingRepository {
-  final String? authToken;
-  OnboardingRepository({this.authToken});
+  OnboardingRepository();
 
-  Map<String, String> get _headers => {
-    'Content-Type': 'application/json',
-    if (authToken != null) 'Authorization': 'Bearer $authToken',
-  };
+  Future<Map<String, String>> get _headers async {
+    String? idToken;
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        idToken = await user.getIdToken();
+      }
+    } catch (e) {
+      debugPrint('[ONBOARDING] ✗ Failed to get Firebase token: $e');
+    }
+
+    return {
+      'Content-Type': 'application/json',
+      if (idToken != null) 'Authorization': 'Bearer $idToken',
+    };
+  }
 
   /// POST /api/v1/onboarding/connect
   /// Submits handle, triggers scrape + ARIA analysis
@@ -25,9 +37,10 @@ class OnboardingRepository {
     required String handle,
     required String platform,
   }) async {
+    final headers = await _headers;
     final res = await http.post(
       Uri.parse('$_baseUrl/onboarding/connect'),
-      headers: _headers,
+      headers: headers,
       body: jsonEncode({ 'handle': handle, 'platform': platform }),
     );
     if (res.statusCode == 200) {
@@ -46,9 +59,10 @@ class OnboardingRepository {
     required String platform,
     required String followerRange,
   }) async {
+    final headers = await _headers;
     final res = await http.post(
       Uri.parse('$_baseUrl/onboarding/finalise'),
-      headers: _headers,
+      headers: headers,
       body: jsonEncode({
         'confirmedNiches':    confirmedNiches,
         'confirmedArchetype': confirmedArchetype,
@@ -64,9 +78,10 @@ class OnboardingRepository {
 
   /// GET /api/v1/onboarding/status
   Future<Map<String, dynamic>> getStatus() async {
+    final headers = await _headers;
     final res = await http.get(
       Uri.parse('$_baseUrl/onboarding/status'),
-      headers: _headers,
+      headers: headers,
     );
     if (res.statusCode == 200) {
       final body = jsonDecode(res.body) as Map<String, dynamic>;
@@ -77,6 +92,5 @@ class OnboardingRepository {
 }
 
 final onboardingRepositoryProvider = Provider<OnboardingRepository>((ref) {
-  final authToken = ref.watch(authProvider).user?.id;
-  return OnboardingRepository(authToken: authToken);
+  return OnboardingRepository();
 });

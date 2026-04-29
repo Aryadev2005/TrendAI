@@ -6,7 +6,7 @@ import '../presentation/screens/onboarding/smart_onboarding_screen.dart';
 import '../presentation/screens/dashboard/dashboard_screen.dart';
 import '../presentation/screens/discover/discover_screen.dart';
 import '../presentation/screens/agent/agent_chat_screen.dart';
-import '../presentation/screens/launch/launch_screen_placeholder.dart';
+import '../presentation/screens/launch/launch_screen.dart';
 import '../presentation/screens/profile/profile_screen.dart';
 
 class AppRoutes {
@@ -31,7 +31,7 @@ class AppRoutes {
       GoRoute(path: dashboard,  builder: (_, __) => const DashboardScreen()),
       GoRoute(path: discover,   builder: (_, __) => const DiscoverScreen()),
       GoRoute(path: studio,     builder: (_, __) => const AgentChatScreen()),
-      GoRoute(path: launch,     builder: (_, __) => const LaunchScreenPlaceholder()),
+      GoRoute(path: launch,     builder: (_, __) => const LaunchScreen()),
       GoRoute(path: profile,    builder: (_, __) => const ProfileScreen()),
     ],
   );

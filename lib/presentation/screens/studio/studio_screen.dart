@@ -96,7 +96,7 @@ class _Header extends StatelessWidget {
     bottom: false,
     child: Container(
       padding: const EdgeInsets.fromLTRB(20, 14, 20, 12),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color:  AppColors.bgPrimary,
         border: Border(bottom: BorderSide(color: AppColors.border, width: 0.5)),
       ),
@@ -186,7 +186,7 @@ class _ScriptTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (state.scriptLoading) return _Loading('ARIA is building your script...');
+    if (state.scriptLoading) return const _Loading('ARIA is building your script...');
     if (state.sections.isEmpty) return _EmptyScript(session: session);
 
     return SingleChildScrollView(
@@ -385,7 +385,7 @@ class _SectionCardState extends ConsumerState<_SectionCard> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(children: [
-                  Text('${s.label}',
+                  Text(s.label,
                     style: GoogleFonts.dmSans(
                       color: AppColors.textDark,
                       fontWeight: FontWeight.w700, fontSize: 14)),
@@ -425,7 +425,7 @@ class _SectionCardState extends ConsumerState<_SectionCard> {
                       hintStyle: GoogleFonts.dmSans(color: AppColors.textMid),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: BorderSide(color: AppColors.border),
+                        borderSide: const BorderSide(color: AppColors.border),
                       ),
                       contentPadding: const EdgeInsets.all(10),
                     ),
@@ -868,8 +868,8 @@ class _BGMCard extends StatelessWidget {
             ),
             const SizedBox(width: 10),
             bgm.isSelected
-                ? Icon(Icons.check_circle, color: AppColors.primary, size: 20)
-                : Icon(Icons.radio_button_unchecked, color: AppColors.border, size: 20),
+                ? const Icon(Icons.check_circle, color: AppColors.primary, size: 20)
+                : const Icon(Icons.radio_button_unchecked, color: AppColors.border, size: 20),
           ]),
           const SizedBox(height: 10),
           Text(bgm.why, style: GoogleFonts.dmSans(

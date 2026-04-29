@@ -123,7 +123,7 @@ class _SmartOnboardingScreenState extends ConsumerState<SmartOnboardingScreen>
               ),
             ),
             const Spacer(),
-            Icon(
+            const Icon(
               Icons.arrow_forward_rounded,
               color: AppColors.primary,
               size: 18,
@@ -243,7 +243,7 @@ class _SmartOnboardingScreenState extends ConsumerState<SmartOnboardingScreen>
                   ),
                 ),
                 child: onboardingState.isLoading
-                    ? SizedBox(
+                    ? const SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(
@@ -428,7 +428,7 @@ class _SmartOnboardingScreenState extends ConsumerState<SmartOnboardingScreen>
             ),
             const SizedBox(height: 28),
             // Profile Stats
-            _statsRow('Followers', profile.followerRange ?? 'N/A',
+            _statsRow('Followers', profile.followerRange,
                 '👥'),
             const SizedBox(height: 12),
             _statsRow('Health Score', '${profile.healthScore}/100',
@@ -698,7 +698,7 @@ class _SmartOnboardingScreenState extends ConsumerState<SmartOnboardingScreen>
                   ),
                 ),
                 child: onboardingState.isLoading
-                    ? SizedBox(
+                    ? const SizedBox(
                         height: 20,
                         width: 20,
                         child: CircularProgressIndicator(

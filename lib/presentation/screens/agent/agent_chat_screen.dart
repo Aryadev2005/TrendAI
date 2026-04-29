@@ -136,7 +136,7 @@ class _AgentChatScreenState extends ConsumerState<AgentChatScreen> {
     bottom: false,
     child: Container(
       padding: const EdgeInsets.fromLTRB(20, 14, 16, 12),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color:  AppColors.bgPrimary,
         border: Border(bottom: BorderSide(color: AppColors.border, width: 0.5)),
       ),
@@ -495,7 +495,7 @@ class _InputBar extends StatelessWidget {
     return Container(
       padding: EdgeInsets.fromLTRB(
         16, 10, 16, MediaQuery.of(context).viewInsets.bottom > 0 ? 10 : 16),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color:  AppColors.bgPrimary,
         border: Border(top: BorderSide(color: AppColors.border, width: 0.5)),
       ),

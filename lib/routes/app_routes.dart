@@ -8,6 +8,7 @@ import '../presentation/screens/discover/discover_screen.dart';
 import '../presentation/screens/agent/agent_chat_screen.dart';
 import '../presentation/screens/launch/launch_screen.dart';
 import '../presentation/screens/profile/profile_screen.dart';
+import '../presentation/screens/subscription/paywall_screen.dart';
 
 class AppRoutes {
   static const splash     = '/';
@@ -19,6 +20,7 @@ class AppRoutes {
   static const studio     = '/studio';   // → AgentChatScreen (ARIA is the Studio)
   static const launch     = '/launch';
   static const profile    = '/profile';
+  static const paywall    = '/paywall';
   static const calendar   = '/home';     // calendar lives on dashboard for now
 
   static final router = GoRouter(
@@ -33,6 +35,7 @@ class AppRoutes {
       GoRoute(path: studio,     builder: (_, __) => const AgentChatScreen()),
       GoRoute(path: launch,     builder: (_, __) => const LaunchScreen()),
       GoRoute(path: profile,    builder: (_, __) => const ProfileScreen()),
+      GoRoute(path: paywall,    builder: (_, __) => const PaywallScreen()),
     ],
   );
 }

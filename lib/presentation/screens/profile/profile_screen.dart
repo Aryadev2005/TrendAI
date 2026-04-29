@@ -4,11 +4,13 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/colors.dart';
 import '../../../data/models/profile_model.dart';
 import '../../../presentation/controllers/profile_controller.dart';
 import '../../../presentation/widgets/navigation/bottom_nav.dart';
+import '../../../routes/app_routes.dart';
 
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
@@ -958,6 +960,13 @@ class _AccountTab extends ConsumerWidget {
           const SizedBox(height: 24),
           // Menu
           _MenuTile(
+            icon: Icons.star_outline,
+            label: 'Upgrade to Pro',
+            onTap: () => context.push(AppRoutes.paywall),
+            highlight: true,
+          ),
+          const SizedBox(height: 8),
+          _MenuTile(
             icon: Icons.settings_rounded,
             label: 'Settings',
             onTap: () {},
@@ -1060,47 +1069,50 @@ class _SubscriptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPro = plan != 'free';
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: isPro
-              ? [Colors.amber.withValues(alpha: 0.15), Colors.orange.withValues(alpha: 0.05)]
-              : [AppColors.bgCard, AppColors.bgCard],
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: isPro ? Colors.amber.withValues(alpha: 0.3) : AppColors.border,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                isPro ? '⭐ ${plan.toUpperCase()}' : 'Free Plan',
-                style: GoogleFonts.dmSans(
-                  color: isPro ? Colors.amber.shade600 : AppColors.textMid,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                isPro ? 'Premium features unlocked' : 'Upgrade to unlock more',
-                style: GoogleFonts.dmSans(
-                  color: AppColors.textMid,
-                  fontSize: 12,
-                ),
-              ),
-            ],
+    return GestureDetector(
+      onTap: isPro ? null : () => context.push(AppRoutes.paywall),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: isPro
+                ? [Colors.amber.withValues(alpha: 0.15), Colors.orange.withValues(alpha: 0.05)]
+                : [AppColors.bgCard, AppColors.bgCard],
+            end: Alignment.bottomRight,
           ),
-          if (isPro)
-            Icon(Icons.check_circle, color: Colors.amber.shade600, size: 24),
-        ],
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(
+            color: isPro ? Colors.amber.withValues(alpha: 0.3) : AppColors.border,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  isPro ? '⭐ ${plan.toUpperCase()}' : 'Free Plan',
+                  style: GoogleFonts.dmSans(
+                    color: isPro ? Colors.amber.shade600 : AppColors.textMid,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  isPro ? 'Premium features unlocked' : 'Upgrade to unlock more',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.textMid,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+            if (isPro)
+              Icon(Icons.check_circle, color: Colors.amber.shade600, size: 24),
+          ],
+        ),
       ),
     );
   }
@@ -1111,9 +1123,10 @@ class _MenuTile extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final bool isDestructive;
+  final bool highlight;
   const _MenuTile({
     required this.icon, required this.label,
-    required this.onTap, this.isDestructive = false,
+    required this.onTap, this.isDestructive = false, this.highlight = false,
   });
 
   @override
@@ -1122,17 +1135,37 @@ class _MenuTile extends StatelessWidget {
     child: Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
-        color: isDestructive ? Colors.red.withValues(alpha: 0.05) : AppColors.bgCard,
+        color: highlight
+            ? const Color.fromARGB(255, 59, 188, 226).withValues(alpha: 0.1)
+            : isDestructive
+                ? Colors.red.withValues(alpha: 0.05)
+                : AppColors.bgCard,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDestructive ? Colors.red.withValues(alpha: 0.2) : AppColors.border,
+          color: highlight
+              ? const Color.fromARGB(255, 59, 188, 226).withValues(alpha: 0.3)
+              : isDestructive
+                  ? Colors.red.withValues(alpha: 0.2)
+                  : AppColors.border,
         ),
       ),
       child: Row(children: [
-        Icon(icon, color: isDestructive ? Colors.red : AppColors.primary, size: 20),
+        Icon(
+          icon,
+          color: highlight
+              ? const Color.fromARGB(255, 59, 188, 226)
+              : isDestructive
+                  ? Colors.red
+                  : AppColors.primary,
+          size: 20,
+        ),
         const SizedBox(width: 12),
         Text(label, style: GoogleFonts.dmSans(
-          color: isDestructive ? Colors.red : AppColors.textDark,
+          color: highlight
+              ? const Color.fromARGB(255, 59, 188, 226)
+              : isDestructive
+                  ? Colors.red
+                  : AppColors.textDark,
           fontSize: 13,
           fontWeight: FontWeight.w600,
         )),

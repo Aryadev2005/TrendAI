@@ -2,14 +2,21 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'core/theme/app_theme.dart';
 import 'routes/app_routes.dart';
+import 'core/services/revenue_cat_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Initialize RevenueCat
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  await RevenueCatService.init(userId: uid);
+
   runApp(const ProviderScope(child: TrendAIApp()));
 }
 

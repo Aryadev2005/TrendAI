@@ -9,6 +9,8 @@ import '../presentation/screens/agent/agent_chat_screen.dart';
 import '../presentation/screens/launch/launch_screen.dart';
 import '../presentation/screens/profile/profile_screen.dart';
 import '../presentation/screens/subscription/paywall_screen.dart';
+import '../presentation/screens/video_dna/video_dna_screen.dart';
+import '../data/repositories/aria_chat_repository.dart';
 
 class AppRoutes {
   static const splash     = '/';
@@ -21,6 +23,7 @@ class AppRoutes {
   static const launch     = '/launch';
   static const profile    = '/profile';
   static const paywall    = '/paywall';
+  static const videoDna   = '/video-dna';
   static const calendar   = '/home';     // calendar lives on dashboard for now
 
   static final router = GoRouter(
@@ -32,10 +35,16 @@ class AppRoutes {
       GoRoute(path: onboarding, builder: (_, __) => const SmartOnboardingScreen()),
       GoRoute(path: dashboard,  builder: (_, __) => const DashboardScreen()),
       GoRoute(path: discover,   builder: (_, __) => const DiscoverScreen()),
-      GoRoute(path: studio,     builder: (_, __) => const AgentChatScreen()),
+      GoRoute(
+        path: studio,
+        builder: (context, state) => AgentChatScreen(
+          ariaContext: state.extra as AriaSessionContext?,
+        ),
+      ),
       GoRoute(path: launch,     builder: (_, __) => const LaunchScreen()),
       GoRoute(path: profile,    builder: (_, __) => const ProfileScreen()),
       GoRoute(path: paywall,    builder: (_, __) => const PaywallScreen()),
+      GoRoute(path: videoDna,   builder: (_, __) => const VideoDnaScreen()),
     ],
   );
 }

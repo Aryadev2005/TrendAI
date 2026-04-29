@@ -960,6 +960,12 @@ class _AccountTab extends ConsumerWidget {
           const SizedBox(height: 24),
           // Menu
           _MenuTile(
+            icon: Icons.biotech_rounded,
+            label: 'Video DNA',
+            onTap: () => context.push(AppRoutes.videoDna),
+          ),
+          const SizedBox(height: 8),
+          _MenuTile(
             icon: Icons.star_outline,
             label: 'Upgrade to Pro',
             onTap: () => context.push(AppRoutes.paywall),

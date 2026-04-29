@@ -36,6 +36,9 @@ dependencies:
   # Subscription & RevenueCat
   purchases_flutter: ^7.0.0
 
+  # UUID generation for session IDs
+  uuid: ^4.3.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

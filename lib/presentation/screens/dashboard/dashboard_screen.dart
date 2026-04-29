@@ -90,6 +90,10 @@ class DashboardScreen extends ConsumerWidget {
                     isActive: session.hasScript,
                   ),
                   const SizedBox(height: 28),
+                  _sectionLabel('ARIA TOOLS'),
+                  const SizedBox(height: 14),
+                  _videoDnaCard(context),
+                  const SizedBox(height: 24),
                   _sectionLabel('ARIA STATS'),
                   const SizedBox(height: 14),
                   _statsRow(),
@@ -371,6 +375,63 @@ class DashboardScreen extends ConsumerWidget {
           ),
         ),
       ],
+    ),
+  );
+
+  Widget _videoDnaCard(BuildContext context) => GestureDetector(
+    onTap: () => context.push(AppRoutes.videoDna),
+    child: Container(
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppColors.bgCard,
+        borderRadius: BorderRadius.circular(AppDimensions.radiusLG),
+        border: Border.all(color: AppColors.border),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56, height: 56,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: AppColors.primary.withValues(alpha: 0.12),
+            ),
+            child: const Icon(
+              Icons.biotech_rounded,
+              color: AppColors.primary,
+              size: 28,
+            ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Video DNA',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.textDark,
+                    fontSize: AppDimensions.fontMD,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Analyse any YouTube video',
+                  style: GoogleFonts.dmSans(
+                    color: AppColors.textMid,
+                    fontSize: AppDimensions.fontXS,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Icon(
+            Icons.arrow_forward_rounded,
+            color: AppColors.textLight,
+            size: 18,
+          ),
+        ],
+      ),
     ),
   );
 }

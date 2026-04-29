@@ -11,6 +11,7 @@ import '../../../core/constants/dimensions.dart';
 import '../../../data/models/radar_model.dart';
 import '../../../presentation/controllers/discover_controller.dart';
 import '../../../presentation/controllers/aria_session_controller.dart';
+import '../../../data/repositories/aria_chat_repository.dart';
 import '../../../presentation/widgets/navigation/bottom_nav.dart';
 import '../../../routes/app_routes.dart';
 
@@ -340,7 +341,13 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
             GestureDetector(
               onTap: () {
                 ref.read(ariaSessionProvider.notifier).setIdea(pick.title);
-                context.go(AppRoutes.studio);
+                context.push(
+                  AppRoutes.studio,
+                  extra: AriaSessionContext(
+                    idea: pick.title,
+                    trendTitle: pick.title,
+                  ),
+                );
               },
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
@@ -564,7 +571,14 @@ class _DiscoverScreenState extends ConsumerState<DiscoverScreen> {
                       },
                     );
                     Navigator.pop(context);
-                    context.go(AppRoutes.studio);
+                    context.push(
+                      AppRoutes.studio,
+                      extra: AriaSessionContext(
+                        idea: opp.title,
+                        platform: 'Instagram',
+                        trendTitle: opp.title,
+                      ),
+                    );
                   },
                   child: Container(
                     padding: const EdgeInsets.symmetric(vertical: 12),

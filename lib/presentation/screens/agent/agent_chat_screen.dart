@@ -1,5 +1,6 @@
 // lib/presentation/screens/agent/agent_chat_screen.dart
 // ARIA Personal Agent Chat — free conversation, memory, action chips
+// Also serves as the ARIA Brain with context-aware functionality
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,11 +9,15 @@ import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../core/constants/colors.dart';
 import '../../../presentation/controllers/agent_chat_controller.dart';
+import '../../../presentation/controllers/aria_chat_controller.dart';
+import '../../../data/repositories/aria_chat_repository.dart';
 import '../../../presentation/widgets/navigation/bottom_nav.dart';
 import '../../../routes/app_routes.dart';
 
 class AgentChatScreen extends ConsumerStatefulWidget {
-  const AgentChatScreen({super.key});
+  final AriaSessionContext? ariaContext;
+  
+  const AgentChatScreen({super.key, this.ariaContext});
   @override
   ConsumerState<AgentChatScreen> createState() => _AgentChatScreenState();
 }
@@ -33,6 +38,20 @@ class _AgentChatScreenState extends ConsumerState<AgentChatScreen> {
     'Analyse my content strategy honestly 🔍',
     'How do I edit jump cuts in CapCut? ✂️',
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize ARIA Brain chat if context is provided
+    if (widget.ariaContext != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(ariaChatProvider.notifier).initialize(
+          entryScreen: 'studio',
+          context: widget.ariaContext,
+        );
+      });
+    }
+  }
 
   @override
   void dispose() {
@@ -62,6 +81,14 @@ class _AgentChatScreenState extends ConsumerState<AgentChatScreen> {
     _scrollToBottom();
   }
 
+  void _sendAriaBrain([String? override]) {
+    final text = override ?? _input.text.trim();
+    if (text.isEmpty) return;
+    _input.clear();
+    ref.read(ariaChatProvider.notifier).sendMessage(text);
+    _scrollToBottom();
+  }
+
   void _navigate(String feature) {
     final routes = {
       'discover':  AppRoutes.discover,
@@ -77,8 +104,13 @@ class _AgentChatScreenState extends ConsumerState<AgentChatScreen> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(agentProvider);
+    final ariaState = ref.watch(ariaChatProvider);
 
     ref.listen(agentProvider, (_, __) => _scrollToBottom());
+    ref.listen(ariaChatProvider, (_, __) => _scrollToBottom());
+
+    // Determine if we're in ARIA Brain mode (has context) or Agent mode
+    final isAriaBrainMode = widget.ariaContext != null;
 
     return Scaffold(
       backgroundColor: AppColors.bgPrimary,
@@ -94,34 +126,56 @@ class _AgentChatScreenState extends ConsumerState<AgentChatScreen> {
 
           // ── Messages ─────────────────────────────────────────────────
           Expanded(
-            child: state.messages.isEmpty
-                ? _EmptyState(starters: _starters, onTap: _send)
-                : ListView.builder(
-                    controller:  _scroll,
-                    padding:     const EdgeInsets.fromLTRB(16, 12, 16, 12),
-                    itemCount:   state.messages.length,
-                    itemBuilder: (_, i) => _Bubble(
-                      msg:        state.messages[i],
-                      onNavigate: _navigate,
-                      onCopy:     (text) {
-                        Clipboard.setData(ClipboardData(text: text));
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Copied'),
-                            duration: Duration(seconds: 1),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
+            child: isAriaBrainMode
+                ? (ariaState.messages.isEmpty && ariaState.greeting != null
+                    ? _AriaBrainEmptyState(greeting: ariaState.greeting!, onTap: _sendAriaBrain)
+                    : (ariaState.messages.isEmpty
+                        ? _EmptyState(starters: _starters, onTap: _send)
+                        : ListView.builder(
+                            controller:  _scroll,
+                            padding:     const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                            itemCount:   ariaState.messages.length,
+                            itemBuilder: (_, i) => _AriaBrainBubble(
+                              msg: ariaState.messages[i],
+                              onCopy: (text) {
+                                Clipboard.setData(ClipboardData(text: text));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Copied'),
+                                    duration: Duration(seconds: 1),
+                                  ),
+                                );
+                              },
+                            ),
+                          )))
+                : (state.messages.isEmpty
+                    ? _EmptyState(starters: _starters, onTap: _send)
+                    : ListView.builder(
+                        controller:  _scroll,
+                        padding:     const EdgeInsets.fromLTRB(16, 12, 16, 12),
+                        itemCount:   state.messages.length,
+                        itemBuilder: (_, i) => _Bubble(
+                          msg:        state.messages[i],
+                          onNavigate: _navigate,
+                          onCopy:     (text) {
+                            Clipboard.setData(ClipboardData(text: text));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Copied'),
+                                duration: Duration(seconds: 1),
+                              ),
+                            );
+                          },
+                        ),
+                      )),
           ),
 
           // ── Input bar ─────────────────────────────────────────────────
           _InputBar(
             controller: _input,
             focusNode:  _focus,
-            isLoading:  state.isLoading,
-            onSend:     _send,
+            isLoading:  isAriaBrainMode ? ariaState.isLoading : state.isLoading,
+            onSend:     isAriaBrainMode ? _sendAriaBrain : _send,
           ),
 
           // Bottom nav spacing
@@ -207,6 +261,158 @@ class _AgentChatScreenState extends ConsumerState<AgentChatScreen> {
       ]),
     ),
   );
+}
+
+// ─── ARIA Brain Empty State ───────────────────────────────────────────────────
+class _AriaBrainEmptyState extends StatelessWidget {
+  final String greeting;
+  final void Function(String) onTap;
+  const _AriaBrainEmptyState({required this.greeting, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      padding: const EdgeInsets.fromLTRB(20, 32, 20, 20),
+      child: Column(children: [
+        const Text('✨', style: TextStyle(fontSize: 48)),
+        const SizedBox(height: 16),
+        Text('ARIA Brain',
+          style: GoogleFonts.dmSerifDisplay(
+            color: AppColors.textDark, fontSize: 26)),
+        const SizedBox(height: 8),
+        Text(greeting,
+          textAlign: TextAlign.center,
+          style: GoogleFonts.dmSans(
+            color: AppColors.textMid, fontSize: 14, height: 1.5)),
+      ]),
+    );
+  }
+}
+
+// ─── ARIA Brain Chat Bubble ───────────────────────────────────────────────────
+class _AriaBrainBubble extends StatelessWidget {
+  final ChatMessage msg;
+  final void Function(String text) onCopy;
+  const _AriaBrainBubble({required this.msg, required this.onCopy});
+
+  @override
+  Widget build(BuildContext context) {
+    final isAria = msg.role == 'assistant';
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Column(
+        crossAxisAlignment:
+            isAria ? CrossAxisAlignment.start : CrossAxisAlignment.end,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisAlignment:
+                isAria ? MainAxisAlignment.start : MainAxisAlignment.end,
+            children: [
+              if (isAria) ...[
+                Container(
+                  width: 28, height: 28,
+                  decoration: BoxDecoration(
+                    color:  AppColors.primary.withValues(alpha: 0.1),
+                    shape:  BoxShape.circle,
+                    border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
+                  ),
+                  child: const Center(child: Text('✨', style: TextStyle(fontSize: 12))),
+                ),
+                const SizedBox(width: 8),
+              ],
+              Flexible(
+                child: GestureDetector(
+                  onLongPress: () => onCopy(msg.content),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16, vertical: 12),
+                    decoration: BoxDecoration(
+                      color: isAria ? AppColors.bgCard : AppColors.primary,
+                      borderRadius: BorderRadius.only(
+                        topLeft:     const Radius.circular(18),
+                        topRight:    const Radius.circular(18),
+                        bottomLeft:  Radius.circular(isAria ? 4 : 18),
+                        bottomRight: Radius.circular(isAria ? 18 : 4),
+                      ),
+                      border: isAria
+                          ? Border.all(color: AppColors.border, width: 0.5)
+                          : null,
+                    ),
+                    child: Text(
+                      msg.content,
+                      style: GoogleFonts.dmSans(
+                        color:  isAria ? AppColors.textDark : Colors.white,
+                        fontSize: 14,
+                        height: 1.55,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              if (!isAria) const SizedBox(width: 8),
+            ],
+          ),
+
+          // Tools used indicator
+          if (isAria && msg.toolsUsed.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.only(left: 44),
+              child: _ToolsUsedIndicator(tools: msg.toolsUsed),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+// ─── Tools Used Indicator ─────────────────────────────────────────────────────
+class _ToolsUsedIndicator extends StatelessWidget {
+  final List<String> tools;
+  const _ToolsUsedIndicator({required this.tools});
+
+  String _toolLabel(String tool) {
+    final labels = {
+      'live_trends': '📊 Checked live trends',
+      'bgm_matcher': '🎵 Matched BGM',
+      'script_optimizer': '📝 Optimized script',
+      'hook_analyzer': '🎣 Analyzed hook',
+      'engagement_predictor': '📈 Predicted engagement',
+      'competitor_tracker': '👀 Tracked competitors',
+      'viral_scorer': '🚀 Scored virality',
+    };
+    return labels[tool] ?? '✨ Used $tool';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: 6,
+      runSpacing: 4,
+      children: tools.take(3).map((tool) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        decoration: BoxDecoration(
+          color: AppColors.primary.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: AppColors.primary.withValues(alpha: 0.3),
+            width: 0.5,
+          ),
+        ),
+        child: Text(
+          _toolLabel(tool),
+          style: GoogleFonts.dmSans(
+            color: AppColors.primary,
+            fontSize: 11,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      )).toList(),
+    );
+  }
 }
 
 // ─── Memory Strip ─────────────────────────────────────────────────────────────
